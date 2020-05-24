@@ -1,7 +1,7 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGlndWVyb2RpZWdvIiwiYSI6ImNrN3Q2a25yNTBtc2ozaG1yam8zNnRibHUifQ.Zgmrlgnrw54eXySGuI3DIQ';
 var map = new mapboxgl.Map({
     container: 'map', // container id
-    style: 'mapbox://styles/higuerodiego/ck7t6ytf00hno1iqyycuc6pm6/draft', // stylesheet location
+    style: 'mapbox://styles/higuerodiego/ck9oclajz57o51iustgi9ceee/draft', // stylesheet location
     center: [2.290078, 48.895353], // starting position [lng, lat]
     zoom: 17 // starting zoom
 });
@@ -18,6 +18,7 @@ map.addControl(
     })
 );
 map.on('load', function() {
+
     var layers = map.getStyle().layers;
     var labelLayerId;
 
@@ -46,10 +47,58 @@ map.on('load', function() {
         }
     }), labelLayerId;
 
+    map.addSource('route', {
+        'type': 'geojson',
+        'data': {
+            'type': 'Feature',
+            'properties': {},
+            'geometry': {
+                'type': 'LineString',
+                'coordinates': [
+                    [
+                        2.2876453399658203,
+                        48.89515306015295
+                    ],
+                    [
+                        2.291475534439087,
+                        48.89638036368416
+                    ],
+                    [
+                        2.293674945831299,
+                        48.89345312445823
+                    ],
+                    [
+                        2.2902631759643555,
+                        48.89216226330684
+                    ],
+                    [
+                        2.2875916957855225,
+                        48.895124845924364
+                    ]
+                ]
+            }
+        }
+    });
+    map.addLayer({
+        'id': 'route',
+        'type': 'line',
+        'source': 'route',
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
+        'paint': {
+            'line-color': 'red',
+            'line-width': 20,
+            'line-opacity': 0.5
+        }
+    });
+
 })
+
 var database = firebase.database();
 
-database.ref("LevalloisN1")
+database.ref("LevalloisN7")
     .on("child_added", function(s) {
 
         map.setFeatureState({
@@ -61,7 +110,7 @@ database.ref("LevalloisN1")
 
     })
 
-database.ref("LevalloisN1")
+database.ref("LevalloisN7")
     .on("child_removed", function(s) {
 
         map.setFeatureState({
@@ -81,7 +130,7 @@ map.on('click', function(e) {
         .setHTML("<button id ='enviar'onclick='enviarBaseDatos();'>Enviar</button><br><button id ='borrar'onclick='borrarBaseDatos();'>Borrar</button>")
         .addTo(map);
 
-    function fechaHecho() {
+    function fechaHecho(e) {
         var today = new Date()
         var d = today.getDate();
         var m = today.getMonth();
@@ -98,14 +147,14 @@ map.on('click', function(e) {
     document.getElementById('enviar').onclick =
         function enviarBaseDatos() {
 
-            database.ref("LevalloisN1/" + edificio.id)
+            database.ref("LevalloisN7/" + edificio.id)
                 .set(edificio);
             popup.remove()
         }
     document.getElementById('borrar').onclick =
         function borrarBaseDatos() {
 
-            firebase.database().ref("LevalloisN1/" + numero).remove();
+            firebase.database().ref("LevalloisN7/" + numero).remove();
             popup.remove()
         };
 
